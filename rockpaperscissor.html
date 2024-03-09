@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang = "en">
+
+<head>
+  <meta charset = "UTF-8">
+  <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+  <title> Rock Paper Scissors Game </title>
+  
+<style>
+*
+    {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    }
+
+body
+    {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      width: 100%;
+    }
+
+:root
+        {
+        --gry: #706a6a;
+        --wht: #ffffff;
+        --trp: transparent;
+        --rad: #f12e0b;
+        --blu: #7568e7;
+        }
+
+.container
+    {
+    background-color: var(--trp);
+    margin: 1rem 1rem;
+    padding: 2rem 4rem;
+    height: 90vh;
+    width: 100%;
+    border: .2rem double var(--gry);
+    font-family: Arial;
+    font-size: 1rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--blu);
+    }
+
+.btn
+    {
+    display: inline-block;
+    padding: .2rem .6rem;
+    margin: 2rem .3rem;
+    background-color: var(--blu);
+    border: none;
+    border-radius: 10%;
+    font-size: 1rem;
+    font-weight: 800;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: var(--wht);
+    cursor: pointer;
+    transition: background-color 0.7s ease;
+    }
+
+.btn:hover 
+    {
+    background-color: var(--rad);
+    }
+
+#player-choice, #computer-choice
+    {
+    display: inline-block;
+    }
+
+.choice
+    {
+    display: inline-block;
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--gry);
+    animation: shake 0.5s ease;
+    }
+
+@keyframes shake
+    {
+    0%
+    {transform: rotate(0deg);}
+    20%
+    {transform: rotate(10deg);}
+    40%
+    {transform: rotate(-10deg);}
+    60%
+    {transform: rotate(10deg);}
+    80%
+    {transform: rotate(-10deg);}
+    100%
+    {transform: rotate(0deg);}
+    }
+
+.result
+    {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--blu);
+    }
+
+#score
+    {
+    font-size: 1.5rem;
+    color: var(--rad);
+    }
+
+.restart-btn
+    {
+    display: inline-block;
+    margin-top: 2rem;
+    padding: .2rem .6rem;
+    background-color: var(--blu);
+    border: none;
+    border-radius: 10%;
+    font-size: 1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--wht);
+    cursor: pointer;
+    transition: background-color 0.7s ease;
+    }
+
+.restart-btn:hover
+    {
+    background-color: var(--rad);
+    }
+</style>
+</head>
+
+<body>
+
+  <div class = "container">
+    <h1> Rock Paper Scissors </h1>
+    
+    <div id = "game">
+      <div class = "choices">
+        <button class = "btn" onclick = "play('rock')"> Rock </button>
+        <button class = "btn" onclick = "play('paper')"> Paper </button>
+        <button class = "btn" onclick = "play('scissors')"> Scissors </button>
+      </div>
+    </div>
+
+      <div id = "player-choice"> </div>
+      <div id = "computer-choice"> </div>
+
+      <p id = "result"> </p>
+    
+      <p id = "score"> Score: <span id = "player-score"> 0 </span> - <span id = "computer-score"> 0 </span> </p>
+
+      <button class = "restart-btn" onclick = "restartGame()"> Restart Game </button>
+
+</div>
+
+    <audio id = "win-sound" src = "win.mp3"> </audio>
+    <audio id = "lose-sound" src = "lose.mp3"> </audio>
+    <audio id = "tie-sound" src = "tie.mp3"> </audio>
+
+<script>
+    let playerScore = 0;
+    let computerScore = 0;
+
+    function computerPlay()
+    {
+    const choices = ['rock', 'paper', 'scissors'];
+    const randomIndex = Math.floor(Math.random() * choices.length);
+    return choices[randomIndex];
+    }
+
+    function play(playerSelection)
+    {
+    const computerSelection = computerPlay();
+    playSound('select.mp3');
+
+    document.getElementById('player-choice').innerHTML = `<div class="choice">${playerSelection.toUpperCase()}</div>`;
+    document.getElementById('computer-choice').innerHTML = '<div class="choice">Thinking...</div>';
+
+    setTimeout(() =>
+    {
+    document.getElementById('computer-choice').innerHTML = `<div class="choice">${computerSelection.toUpperCase()}</div>`;
+    calculateResult(playerSelection, computerSelection);
+    }, 1000);
+    }
+
+    function calculateResult(playerSelection, computerSelection)
+    {
+    let result;
+
+    if
+    (
+    (playerSelection === 'rock' && computerSelection === 'scissors') ||
+    (playerSelection === 'paper' && computerSelection === 'rock') ||
+    (playerSelection === 'scissors' && computerSelection === 'paper')
+    )
+    
+    {
+    result = 'You win!';
+    playerScore++;
+    playSound('win.mp3');
+    }
+    else if (playerSelection === computerSelection)
+    {
+    result = 'Match Tie!';
+    playSound('tie.mp3');
+    }
+    else
+    {
+    result = 'Computer wins!';
+    computerScore++;
+    playSound('lose.mp3');
+    }
+
+    document.getElementById('result').innerText = result;
+    document.getElementById('player-score').innerText = playerScore;
+    document.getElementById('computer-score').innerText = computerScore;
+    }
+
+    function restartGame()
+    {
+    playerScore = 0;
+    computerScore = 0;
+    document.getElementById('result').innerText = '';
+    document.getElementById('player-score').innerText = '0';
+    document.getElementById('computer-score').innerText = '0';
+    document.getElementById('player-choice').innerText = '';
+    document.getElementById('computer-choice').innerText = '';
+    }
+
+    function playSound(sound)
+    {
+    const audio = new Audio(sound);
+    audio.play();
+    }
+</script>
+
+</body>
+
+</html>
